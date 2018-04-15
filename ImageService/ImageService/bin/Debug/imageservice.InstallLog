@@ -1,0 +1,34 @@
+﻿Installing assembly 'C:\Users\alon\source\repos\ImageService\ImageService\bin\Debug\imageservice.exe'.
+Affected parameters are:
+   logtoconsole = 
+   logfile = C:\Users\alon\source\repos\ImageService\ImageService\bin\Debug\imageservice.InstallLog
+   assemblypath = C:\Users\alon\source\repos\ImageService\ImageService\bin\Debug\imageservice.exe
+Installing service ImageService...
+Service ImageService has been successfully installed.
+Creating EventLog source ImageService in log Application...
+Committing assembly 'C:\Users\alon\source\repos\ImageService\ImageService\bin\Debug\imageservice.exe'.
+Affected parameters are:
+   logtoconsole = 
+   logfile = C:\Users\alon\source\repos\ImageService\ImageService\bin\Debug\imageservice.InstallLog
+   assemblypath = C:\Users\alon\source\repos\ImageService\ImageService\bin\Debug\imageservice.exe
+Uninstalling assembly 'C:\Users\alon\source\repos\ImageService\ImageService\bin\Debug\imageservice.exe'.
+Affected parameters are:
+   logtoconsole = 
+   logfile = C:\Users\alon\source\repos\ImageService\ImageService\bin\Debug\imageservice.InstallLog
+   assemblypath = C:\Users\alon\source\repos\ImageService\ImageService\bin\Debug\imageservice.exe
+Removing EventLog source ImageService.
+Service ImageService is being removed from the system...
+Service ImageService was successfully removed from the system.
+Installing assembly 'C:\Users\alon\source\repos\ImageService\ImageService\bin\Debug\imageservice.exe'.
+Affected parameters are:
+   logtoconsole = 
+   logfile = C:\Users\alon\source\repos\ImageService\ImageService\bin\Debug\imageservice.InstallLog
+   assemblypath = C:\Users\alon\source\repos\ImageService\ImageService\bin\Debug\imageservice.exe
+Installing service ImageService...
+Service ImageService has been successfully installed.
+Creating EventLog source ImageService in log Application...
+Committing assembly 'C:\Users\alon\source\repos\ImageService\ImageService\bin\Debug\imageservice.exe'.
+Affected parameters are:
+   logtoconsole = 
+   logfile = C:\Users\alon\source\repos\ImageService\ImageService\bin\Debug\imageservice.InstallLog
+   assemblypath = C:\Users\alon\source\repos\ImageService\ImageService\bin\Debug\imageservice.exe
