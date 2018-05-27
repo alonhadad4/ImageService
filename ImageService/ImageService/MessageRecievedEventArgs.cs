@@ -7,11 +7,16 @@ using System.Threading.Tasks;
 /// <summary>
 /// MessageRecievedEventArgs class implementing EventArgs
 /// </summary>
-public class MessageRecievedEventArgs : EventArgs
+namespace ImageService
 {
-    public MessageTypeEnum Status { get; set; }
-    public string Message { get; set; }
-    public MessageRecievedEventArgs()
-	{
-	}
+    public class MessageRecievedEventArgs : EventArgs
+    {
+        public MessageTypeEnum Status { get; set; }
+        public string Message { get; set; }
+        public MessageRecievedEventArgs(MessageTypeEnum id, string message)
+        {
+            this.Status= id;
+            this.Message = message;
+        }
+    }
 }

@@ -18,9 +18,7 @@ public class LoggingModal : ILogging
     /// </summary>
     public void Log(string message, MessageTypeEnum type)
     {
-        MessageRecievedEventArgs mArgs = new MessageRecievedEventArgs();
-        mArgs.Status = type;
-        mArgs.Message = message;
+        MessageRecievedEventArgs mArgs = new MessageRecievedEventArgs(type, message);
         MessageRecieved.Invoke(this, mArgs);
     }
 }

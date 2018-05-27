@@ -8,7 +8,7 @@ using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
-using ILoggingNameSpace;
+using System.Configuration;
 
 namespace ImageService
 {
@@ -41,6 +41,7 @@ namespace ImageService
         [DllImport("advapi32.dll", SetLastError = true)]
         private static extern bool SetServiceStatus(IntPtr handle, ref ServiceStatus serviceStatus);
         private ILogging logger;
+        private ImageServer server;
 
         public ImageService()
         {
@@ -51,8 +52,13 @@ namespace ImageService
                 System.Diagnostics.EventLog.CreateEventSource(
                     "MySource", "MyNewLog");
             }
-            eventLog1.Source = "MySource";
-            eventLog1.Log = "MyNewLog";
+            eventLog1.Source = GetAppSettings().Get("SourceName");
+            eventLog1.Log = GetAppSettings().Get("LogName");
+        }
+
+        private static System.Collections.Specialized.NameValueCollection GetAppSettings()
+        {
+            return ConfigurationSettings.AppSettings;
         }
 
         protected override void OnStart(string[] args)
@@ -63,20 +69,36 @@ namespace ImageService
             serviceStatus.dwWaitHint = 100000;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
 
-            eventLog1.WriteEntry("Service started pending");
+            eventLog1.WriteEntry("Service Started Pending");
+            
+            
             // Set up a timer to trigger every minute.  
             System.Timers.Timer timer = new System.Timers.Timer();
-            timer.Interval = 60000; // 60 seconds  
+            timer.Interval = 10000; // 10 seconds  
             timer.Elapsed += new System.Timers.ElapsedEventHandler(this.OnTimer);
             timer.Start();
+            eventLog1.WriteEntry("timer initialized successfully");
 
             // Update the service state to Running.  
             serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
-            eventLog1.WriteEntry("Service Started");
+
+            eventLog1.WriteEntry("service status set to running");
 
             this.logger = new LoggingModal();
             logger.MessageRecieved += onMsg;
+
+            eventLog1.WriteEntry("logger set");
+            //////////////////////////////////
+            this.server = new ImageServer(this.logger, eventLog1);
+            string handlerList = GetAppSettings().Get("Handler");
+            string[] handlerListArray = handlerList.Split(';');
+            for (int i = 0; i < handlerListArray.Length; i++)
+            {
+                this.server.CreateHandler(handlerListArray[i]);
+            }
+
+            eventLog1.WriteEntry("Service Started");
         }
         
         public void onMsg(object sender, MessageRecievedEventArgs msgArgs)
@@ -86,18 +108,18 @@ namespace ImageService
 
         public void OnTimer(object sender, System.Timers.ElapsedEventArgs args)
         {
-            // TODO: Insert monitoring activities here.  
             eventLog1.WriteEntry("Monitoring the System", EventLogEntryType.Information, eventId++);
         }
 
         protected override void OnStop()
         {
+            this.server.ServiceStopped(this, null);
             eventLog1.WriteEntry("Service Stopped");
         }
 
         protected override void OnContinue()
         {
-            eventLog1.WriteEntry("Service continued");
+            eventLog1.WriteEntry("In OnContinue.");
         }
     }
 }

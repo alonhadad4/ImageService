@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ImageService.Modal
+namespace ImageService
 {
     /// <summary>
     /// CommandRecievedEventArgs Class implements EventArgs
