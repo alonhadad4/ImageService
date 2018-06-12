@@ -42,6 +42,7 @@ namespace ImageService
         private static extern bool SetServiceStatus(IntPtr handle, ref ServiceStatus serviceStatus);
         private ILogging logger;
         private ImageServer server;
+        public EventHandler<MessageRecievedEventArgs> writeToLog;
 
         public ImageService()
         {
@@ -69,7 +70,7 @@ namespace ImageService
             serviceStatus.dwWaitHint = 100000;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
 
-            eventLog1.WriteEntry("Service Started Pending");
+            this.writeToEventLogger("Service Started Pending");
             
             
             // Set up a timer to trigger every minute.  
@@ -77,18 +78,18 @@ namespace ImageService
             timer.Interval = 10000; // 10 seconds  
             timer.Elapsed += new System.Timers.ElapsedEventHandler(this.OnTimer);
             timer.Start();
-            eventLog1.WriteEntry("timer initialized successfully");
+            this.writeToEventLogger("timer initialized successfully");
 
             // Update the service state to Running.  
             serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
-
-            eventLog1.WriteEntry("service status set to running");
+            
+            this.writeToEventLogger("service status set to running");
 
             this.logger = new LoggingModal();
             logger.MessageRecieved += onMsg;
 
-            eventLog1.WriteEntry("logger set");
+            this.writeToEventLogger("logger set");
             //////////////////////////////////
             this.server = new ImageServer(this.logger, eventLog1);
             string handlerList = GetAppSettings().Get("Handler");
@@ -97,29 +98,38 @@ namespace ImageService
             {
                 this.server.CreateHandler(handlerListArray[i]);
             }
+            this.writeToLog += this.server.onLogWrite;
+            this.writeToEventLogger("Service Started");
+        }
 
-            eventLog1.WriteEntry("Service Started");
+        public void writeToEventLogger(String message)
+        {
+            if (this.writeToLog != null)
+            {
+                this.writeToLog.Invoke(this, new MessageRecievedEventArgs( MessageTypeEnum.INFO, message));
+            }
+            this.eventLog1.WriteEntry(message);
         }
         
         public void onMsg(object sender, MessageRecievedEventArgs msgArgs)
         {
-            this.eventLog1.WriteEntry(msgArgs.Message);
+            this.writeToEventLogger(msgArgs.Message);
         }
 
         public void OnTimer(object sender, System.Timers.ElapsedEventArgs args)
         {
-            eventLog1.WriteEntry("Monitoring the System", EventLogEntryType.Information, eventId++);
+            this.writeToEventLogger("Monitoring the System");
         }
 
         protected override void OnStop()
         {
             this.server.ServiceStopped(this, null);
-            eventLog1.WriteEntry("Service Stopped");
+            this.writeToEventLogger("Service Stopped");
         }
 
         protected override void OnContinue()
         {
-            eventLog1.WriteEntry("In OnContinue.");
+            this.writeToEventLogger("In OnContinue.");
         }
     }
 }

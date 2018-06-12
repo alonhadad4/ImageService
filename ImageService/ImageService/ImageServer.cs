@@ -39,9 +39,10 @@ namespace ImageService
             {
                 {1, new NewFileCommand(iModal)}
             };
-            this.channel = TCPChannel.Instance(80, new ClientHandler(), this.logger ,eventLog);
+            this.channel = TCPChannel.Instance(80, this.logger ,eventLog);
             this.channel.Start();
             this.channel.startSendingLogs += subscribeToSendLogs;
+            this.channel.GotCommand += getCommand;
 
         }
         /// <summary>
@@ -63,15 +64,24 @@ namespace ImageService
         /// <param name="args"> arguments</param>
         /// 
 
+        public void getCommand(object sender, MessageRecievedEventArgs eventArgs)
+        {
+            // TBD interpret command, and if handler to be closed, close it and inform gui
+        }
+
         public void subscribeToSendLogs(object sender, EventArgs eventArgs)
         {
-            this.logger.Log("server subscrived to sending logs", MessageTypeEnum.INFO);
+            this.logger.Log("server subscribed to sending logs", MessageTypeEnum.INFO);
             this.logger.MessageRecieved += onLogWrite;
         }
 
         public void onLogWrite(object sender, MessageRecievedEventArgs eventArgs)
         {
             //this.logger.Log("on Log write activated", MessageTypeEnum.INFO);
+            if (!this.channel.hasSentInitial())
+            {
+                return;
+            }
             this.channel.sendLogMessage(this, eventArgs);
         }
 
